@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,  useCallback } from 'react';
 import IngredientList from './IngredientList'
 import IngredientForm from './IngredientForm';
 import Search from './Search';
@@ -6,22 +6,6 @@ import Search from './Search';
 const Ingredients = () => {
 
   const [ingredientsState, setIngredientsState] = useState([])
-
-  useEffect(() => {
-    fetch('https://react-hooks-update-af222-default-rtdb.firebaseio.com/ingredients.json')
-    .then(res => res.json())
-    .then(resData => {
-      const loadedIngredients = []
-      for (const key in resData) {
-        loadedIngredients.push({
-          id: key, 
-          title: resData[key].title, 
-          amount: resData[key].amount
-        })
-      }
-      setIngredientsState(loadedIngredients)
-    })
-  }, [])
 
   useEffect(()=> {
     console.log('[useEffect], rendering ingredient')
@@ -47,12 +31,16 @@ const Ingredients = () => {
 
   }
 
+  const onLoadIngredientsHandler = useCallback((ingredients) => {
+    setIngredientsState(ingredients)
+  }, [])
+
   return (
     <div className="App">
       <IngredientForm onAddIngredient={addIngredientHandler} />
 
       <section>
-        <Search />
+        <Search onLoadIngredients={onLoadIngredientsHandler}/>
         <IngredientList
           ingredients={ingredientsState}
           onRemoveItem={() => { }}
